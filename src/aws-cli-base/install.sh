@@ -4,19 +4,28 @@
 # -u : The script exits if an unset variable is used.
 set -eu
 
-if ! command -v curl >/dev/null 2>&1; then
-  echo "curl not found; installing it"
+# Collect missing prerequisites and install them in a single package-manager call.
+missing=""
+command -v curl >/dev/null 2>&1 || missing="$missing curl"
+command -v unzip >/dev/null 2>&1 || missing="$missing unzip"
+
+if [ -n "$missing" ]; then
+  echo "Installing missing prerequisites:$missing"
   if command -v apt-get >/dev/null 2>&1; then
     apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends curl ca-certificates
+    # shellcheck disable=SC2086
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates $missing
   elif command -v dnf >/dev/null 2>&1; then
-    dnf install -y curl
+    # shellcheck disable=SC2086
+    dnf install -y $missing
   elif command -v yum >/dev/null 2>&1; then
-    yum install -y curl
+    # shellcheck disable=SC2086
+    yum install -y $missing
   elif command -v apk >/dev/null 2>&1; then
-    apk add --no-cache curl
+    # shellcheck disable=SC2086
+    apk add --no-cache $missing
   else
-    echo "Error: curl is missing and no supported package manager was found" >&2
+    echo "Error: missing$missing and no supported package manager was found" >&2
     exit 1
   fi
 fi
