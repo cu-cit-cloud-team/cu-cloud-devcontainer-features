@@ -16,9 +16,34 @@ die() { log "ERROR: $*"; exit 1; }
 have() { command -v "$1" >/dev/null 2>&1; }
 
 [[ "$(id -u)" -eq 0 ]] || die "Run this installer as root."
-command -v python3 >/dev/null 2>&1 ||
-    die "python3 is required (use a Python base image or the python feature)."
-command -v curl >/dev/null 2>&1 || die "curl is required."
+
+# Work out which prerequisites are missing, then install them in one pass.
+need_curl=false need_python=false need_venv=false
+have curl || need_curl=true
+have python3 || need_python=true
+$need_python || python3 -m venv --help >/dev/null 2>&1 || need_venv=true
+
+if $need_curl || $need_python || $need_venv; then
+  pkgs=()
+  $need_curl && pkgs+=(curl)
+  $need_python && pkgs+=(python3 python3-pip)
+  if have apt-get; then
+    # Debian/Ubuntu ship venv separately from python3
+    if $need_python || $need_venv; then pkgs+=(python3-venv); fi
+    log "Installing missing packages: ${pkgs[*]}"
+    apt-get update && apt-get install -y --no-install-recommends "${pkgs[@]}"
+  elif ((${#pkgs[@]} == 0)); then
+    die "python3 venv module is missing and cannot be installed automatically."
+  elif have apk; then
+    log "Installing missing packages: ${pkgs[*]}"
+    apk add --no-cache "${pkgs[@]}"
+  elif have dnf; then
+    log "Installing missing packages: ${pkgs[*]}"
+    dnf install -y "${pkgs[@]}"
+  else
+    die "No supported package manager; install manually: ${pkgs[*]}"
+  fi
+fi
 
 case "$UPDATE_SPECS" in
     background|none) ;;
