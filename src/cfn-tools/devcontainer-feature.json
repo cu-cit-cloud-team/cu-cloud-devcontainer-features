@@ -21,6 +21,9 @@
       "description": "When to run 'cfn-lint --update-specs': in the background after the container is created, or never"
     }
   },
+  "dependsOn": {
+    "ghcr.io/devcontainers/features/python:1": {}
+  },
   "installsAfter": [
     "ghcr.io/devcontainers/features/python"
   ],
