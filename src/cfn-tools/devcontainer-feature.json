@@ -1,0 +1,28 @@
+{
+  "id": "cfn-tools",
+  "version": "1.0.0",
+  "name": "CloudFormation tools",
+  "description": "Installs cfn-lint, cfn-flip, rain and yq for working with CloudFormation templates",
+  "options": {
+    "rain-version": {
+      "type": "string",
+      "default": "1.24.4",
+      "description": "rain version to install (without the leading 'v')"
+    },
+    "yq-version": {
+      "type": "string",
+      "default": "4.54.1",
+      "description": "yq version to install (without the leading 'v')"
+    },
+    "update-specs": {
+      "type": "string",
+      "enum": ["background", "none"],
+      "default": "background",
+      "description": "When to run 'cfn-lint --update-specs': in the background after the container is created, or never"
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/python"
+  ],
+  "postCreateCommand": "/usr/local/share/cfn-tools/update-specs-background.sh"
+}

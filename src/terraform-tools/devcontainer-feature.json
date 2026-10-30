@@ -1,0 +1,21 @@
+{
+  "id": "terraform-tools",
+  "version": "1.0.0",
+  "name": "Terraform tools",
+  "description": "Installs tfenv and a default Terraform version managed by tfenv",
+  "containerEnv": {
+    "TF_PLUGIN_CACHE_DIR": "/opt/terraform/plugin-cache"
+  },
+  "options": {
+    "tfenv-version": {
+      "type": "string",
+      "default": "3.2.2",
+      "description": "tfenv version to install (without the leading 'v')"
+    },
+    "terraform-version": {
+      "type": "string",
+      "default": "1.5.5",
+      "description": "Terraform version to install with tfenv and select as the default"
+    }
+  }
+}

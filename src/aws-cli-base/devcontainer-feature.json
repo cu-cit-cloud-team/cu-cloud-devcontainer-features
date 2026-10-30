@@ -1,0 +1,13 @@
+{
+  "id": "aws-cli-base",
+  "version": "1.0.0",
+  "name": "AWS CLI (base)",
+  "description": "Installs AWS CLI without adding AWS VS Code plugins",
+  "options": {
+    "ssm-session-manager": {
+      "type": "boolean",
+      "default": true,
+      "description": "Also install the AWS Systems Manager Session Manager plugin"
+    }
+  }
+}

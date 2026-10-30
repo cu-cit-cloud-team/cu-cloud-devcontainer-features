@@ -1,0 +1,81 @@
+#!/bin/bash
+
+HOSTNAME=$1
+
+usage() {
+        cat <<EOF
+Usage: $(basename "$0") HOSTNAME_OR_INSTANCE_ID
+
+Connect to a running EC2 instance using AWS Systems Manager Session Manager.
+
+Arguments:
+    HOSTNAME_OR_INSTANCE_ID  EC2 Name tag value or instance ID (i-...)
+
+Options:
+    -h, --help               Show this help message
+
+Example:
+    $(basename "$0") app-server-01
+    $(basename "$0") i-0123456789abcdef0
+EOF
+}
+
+if [[ "$HOSTNAME" == "-h" || "$HOSTNAME" == "--help" ]]; then
+        usage
+        exit 0
+fi
+
+if [ -z "$HOSTNAME" ]; then
+        usage
+    exit 1
+fi
+
+echo "Using AWS_PROFILE=$AWS_PROFILE."
+
+# Check if HOSTNAME is already an instance ID
+if [[ $HOSTNAME =~ ^i- ]]; then
+    INSTANCEID=$HOSTNAME
+    echo "Instance ID detected: $INSTANCEID"
+else
+    # Look up instance ID by name
+    INSTANCEIDS=$(aws ec2 describe-instances \
+        --filters "Name=tag:Name,Values=$HOSTNAME" \
+            "Name=instance-state-name,Values=running" \
+        --query "Reservations[].Instances[].InstanceId" \
+        --output text)
+
+    if [ -z "$INSTANCEIDS" ] || [ "$INSTANCEIDS" == "None" ]; then
+        echo "Could not find EC2 instance with name $HOSTNAME."
+        exit 1
+    fi
+
+    INSTANCEID=$(echo $INSTANCEIDS | awk '{print $1}')
+    NUM_INSTANCES=$(echo $INSTANCEIDS | wc -w)
+
+    if [ $NUM_INSTANCES -gt 1 ]; then
+        echo "Warning: Found $NUM_INSTANCES instances with name $HOSTNAME. Connecting to the first one: $INSTANCEID"
+    fi
+fi
+
+echo "Connecting to $HOSTNAME ($INSTANCEID)..."
+
+MAX_RETRIES=5
+RETRY_DELAY=5
+ATTEMPT=1
+
+while [ $ATTEMPT -le $MAX_RETRIES ]; do
+    if aws ssm start-session --target $INSTANCEID; then
+        exit 0
+    fi
+    
+    if [ $ATTEMPT -lt $MAX_RETRIES ]; then
+        echo "Session failed. Retrying in ${RETRY_DELAY} seconds (attempt $ATTEMPT/$MAX_RETRIES)..."
+        sleep $RETRY_DELAY
+        RETRY_DELAY=$((RETRY_DELAY * 2))
+    fi
+    
+    ATTEMPT=$((ATTEMPT + 1))
+done
+
+echo "Failed to establish session after $MAX_RETRIES attempts."
+exit 1
