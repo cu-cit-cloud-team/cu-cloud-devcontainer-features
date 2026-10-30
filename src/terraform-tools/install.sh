@@ -19,8 +19,9 @@ have() { command -v "$1" >/dev/null 2>&1; }
 [[ "$(id -u)" -eq 0 ]] || die "Run this installer as root."
 trap 'log "Installation failed at line $LINENO."' ERR
 
-# tfenv clones with git and unzips Terraform archives.
+# tfenv clones with git and unzips Terraform archives; HTTPS needs a CA bundle.
 missing=()
+[[ -s /etc/ssl/certs/ca-certificates.crt ]] || missing+=(ca-certificates)
 for dep in git curl unzip; do
     have "$dep" || missing+=("$dep")
 done
