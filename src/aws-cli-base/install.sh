@@ -6,7 +6,14 @@ set -eu
 
 echo "Installing AWS CLI"
 
-curl -fsSL https://awscli.amazonaws.com/v2/install.sh | bash -s -- --system --quiet
+if command -v curl >/dev/null 2>&1; then
+  curl -fsSL https://awscli.amazonaws.com/v2/install.sh | bash -s -- --system --quiet
+elif command -v wget >/dev/null 2>&1; then
+  wget -qO- https://awscli.amazonaws.com/v2/install.sh | bash -s -- --system --quiet
+else
+  echo "Error: neither curl nor wget is available" >&2
+  exit 1
+fi
 
 echo "AWS CLI install complete"
 
