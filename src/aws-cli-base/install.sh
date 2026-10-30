@@ -8,19 +8,22 @@ set -eu
 missing=""
 command -v curl >/dev/null 2>&1 || missing="$missing curl"
 command -v unzip >/dev/null 2>&1 || missing="$missing unzip"
+command -v gpg >/dev/null 2>&1 || missing="$missing gnupg"
 
 if [ -n "$missing" ]; then
   echo "Installing missing prerequisites:$missing"
+  # RPM-based distros name the package gnupg2
+  rpm_missing=$(echo "$missing" | sed 's/\bgnupg\b/gnupg2/')
   if command -v apt-get >/dev/null 2>&1; then
     apt-get update
     # shellcheck disable=SC2086
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates $missing
   elif command -v dnf >/dev/null 2>&1; then
     # shellcheck disable=SC2086
-    dnf install -y $missing
+    dnf install -y $rpm_missing
   elif command -v yum >/dev/null 2>&1; then
     # shellcheck disable=SC2086
-    yum install -y $missing
+    yum install -y $rpm_missing
   elif command -v apk >/dev/null 2>&1; then
     # shellcheck disable=SC2086
     apk add --no-cache $missing
