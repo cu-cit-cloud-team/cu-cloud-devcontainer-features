@@ -4,16 +4,26 @@
 # -u : The script exits if an unset variable is used.
 set -eu
 
+if ! command -v curl >/dev/null 2>&1; then
+  echo "curl not found; installing it"
+  if command -v apt-get >/dev/null 2>&1; then
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends curl ca-certificates
+  elif command -v dnf >/dev/null 2>&1; then
+    dnf install -y curl
+  elif command -v yum >/dev/null 2>&1; then
+    yum install -y curl
+  elif command -v apk >/dev/null 2>&1; then
+    apk add --no-cache curl
+  else
+    echo "Error: curl is missing and no supported package manager was found" >&2
+    exit 1
+  fi
+fi
+
 echo "Installing AWS CLI"
 
-if command -v curl >/dev/null 2>&1; then
-  curl -fsSL https://awscli.amazonaws.com/v2/install.sh | bash -s -- --system --quiet
-elif command -v wget >/dev/null 2>&1; then
-  wget -qO- https://awscli.amazonaws.com/v2/install.sh | bash -s -- --system --quiet
-else
-  echo "Error: neither curl nor wget is available" >&2
-  exit 1
-fi
+curl -fsSL https://awscli.amazonaws.com/v2/install.sh | bash -s -- --system --quiet
 
 echo "AWS CLI install complete"
 

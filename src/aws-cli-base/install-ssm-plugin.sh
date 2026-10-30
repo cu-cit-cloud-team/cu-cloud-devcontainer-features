@@ -49,7 +49,6 @@ esac
 
 # Install only missing prerequisites. Include both common DEB decompressors.
 packages=()
-have curl || packages+=(curl)
 have ar   || packages+=(binutils)
 have tar  || packages+=(tar)
 have xz   || packages+=(xz-utils)
