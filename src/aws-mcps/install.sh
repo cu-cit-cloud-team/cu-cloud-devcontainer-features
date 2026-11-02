@@ -8,14 +8,9 @@ have() { command -v "$1" >/dev/null 2>&1; }
 
 [[ "$(id -u)" -eq 0 ]] || die "Run this installer as root."
 
-# Work out which prerequisites are missing, then install them in one pass.
+# uv can fetch its own Python, so only curl is required from the system.
 pkgs=()
 have curl || pkgs+=(curl)
-if ! have python3; then
-  pkgs+=(python3 python3-pip)
-elif ! have pip3; then
-  pkgs+=(python3-pip)
-fi
 
 if ((${#pkgs[@]} > 0)); then
   log "Installing missing packages: ${pkgs[*]}"
@@ -43,10 +38,9 @@ fi
 if have iam-policy-autopilot; then
   log "iam-policy-autopilot already installed; skipping."
 else
-  log "Installing iam-policy-autopilot."
-  # Newer Debian/Ubuntu pythons are externally managed (PEP 668), so allow system install.
-  PIP_BREAK_SYSTEM_PACKAGES=1 PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_NO_CACHE_DIR=1 \
-    pip3 install --quiet iam-policy-autopilot
+  log "Installing iam-policy-autopilot with uv."
+  # Put the tool env in a shared directory and its executable in /usr/local/bin so non-root users can run it.
+  UV_TOOL_DIR=/opt/uv-tools UV_TOOL_BIN_DIR=/usr/local/bin uv tool install iam-policy-autopilot
 fi
 
 uvx --version
