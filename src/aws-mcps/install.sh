@@ -15,7 +15,7 @@ have curl || pkgs+=(curl)
 if ((${#pkgs[@]} > 0)); then
   log "Installing missing packages: ${pkgs[*]}"
   if have apt-get; then
-    apt-get update && apt-get install -y --no-install-recommends "${pkgs[@]}"
+    apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${pkgs[@]}"
   elif have apk; then
     apk add --no-cache "${pkgs[@]}"
   elif have dnf; then

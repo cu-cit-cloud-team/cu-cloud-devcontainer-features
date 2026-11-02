@@ -28,7 +28,7 @@ done
 if ((${#missing[@]})); then
     log "Installing missing dependencies: ${missing[*]}"
     apt-get update -y
-    apt-get install -y --no-install-recommends "${missing[@]}"
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${missing[@]}"
 fi
 
 if [[ -x "$TFENV_ROOT/bin/tfenv" ]]; then

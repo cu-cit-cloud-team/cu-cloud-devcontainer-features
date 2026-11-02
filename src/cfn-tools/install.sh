@@ -31,7 +31,7 @@ if $need_curl || $need_python || $need_venv; then
     # Debian/Ubuntu ship venv separately from python3
     if $need_python || $need_venv; then pkgs+=(python3-venv); fi
     log "Installing missing packages: ${pkgs[*]}"
-    apt-get update && apt-get install -y --no-install-recommends "${pkgs[@]}"
+    apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${pkgs[@]}"
   elif ((${#pkgs[@]} == 0)); then
     die "python3 venv module is missing and cannot be installed automatically."
   elif have apk; then
