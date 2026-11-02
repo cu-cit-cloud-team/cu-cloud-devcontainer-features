@@ -8,9 +8,10 @@ have() { command -v "$1" >/dev/null 2>&1; }
 
 [[ "$(id -u)" -eq 0 ]] || die "Run this installer as root."
 
-# uv can fetch its own Python, so only curl is required from the system.
+# uv can fetch its own Python, so only curl and a CA bundle are required from the system.
 pkgs=()
 have curl || pkgs+=(curl)
+[[ -s /etc/ssl/certs/ca-certificates.crt ]] || pkgs+=(ca-certificates)
 
 if ((${#pkgs[@]} > 0)); then
   log "Installing missing packages: ${pkgs[*]}"
