@@ -27,15 +27,6 @@ Installs the AWS CLI (without the AWS VS Code plugins), optionally the Session M
 $ ssmhost my-instance-name
 ```
 
-### `aws-mcps`
-
-Installs `uv`/`uvx` and `iam-policy-autopilot` so AWS-related MCP servers can run in the container. It has no options.
-
-```jsonc
-"features": {
-    "ghcr.io/paul-e-allen/feature-starter/aws-mcps:1": {}
-}
-```
 
 ### `cfn-tools`
 
@@ -73,6 +64,16 @@ Installs `tfenv` and a default Terraform version managed by `tfenv`. Sets `TF_PL
 }
 ```
 
+### `uv`
+
+Installs `uv`/`uvx` so MCP servers requiring it can run in the container. It has no options.
+
+```jsonc
+"features": {
+    "ghcr.io/paul-e-allen/feature-starter/uv:1": {}
+}
+```
+
 ## Repo and Feature Structure
 
 Similar to the [`devcontainers/features`](https://github.com/devcontainers/features) repo, this repository has a `src` folder.  Each Feature has its own sub-folder, containing at least a `devcontainer-feature.json` and an entrypoint script `install.sh`. Each Feature also has a matching `test/<feature>/test.sh`.
@@ -84,20 +85,20 @@ Similar to the [`devcontainers/features`](https://github.com/devcontainers/featu
 │   │   ├── install.sh
 │   │   ├── install-ssm-plugin.sh
 │   │   └── ssmhost
-│   ├── aws-mcps
-│   │   ├── devcontainer-feature.json
-│   │   └── install.sh
 │   ├── cfn-tools
 │   │   ├── devcontainer-feature.json
 │   │   └── install.sh
-│   └── terraform-tools
+│   ├── terraform-tools
+│   │   ├── devcontainer-feature.json
+│   │   └── install.sh
+│   └── uv
 │       ├── devcontainer-feature.json
 │       └── install.sh
 └── test
     ├── aws-cli-base/test.sh
-    ├── aws-mcps/test.sh
     ├── cfn-tools/test.sh
-    └── terraform-tools/test.sh
+    ├── terraform-tools/test.sh
+    └── uv/test.sh
 ```
 
 An [implementing tool](https://containers.dev/supporting#tools) will composite [the documented dev container properties](https://containers.dev/implementors/features/#devcontainer-feature-json-properties) from the feature's `devcontainer-feature.json` file, and execute in the `install.sh` entrypoint script in the container during build time.  Implementing tools are also free to process attributes under the `customizations` property as desired.

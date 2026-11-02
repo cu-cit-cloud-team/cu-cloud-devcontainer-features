@@ -17,9 +17,9 @@ jobs:
       matrix:
         features:
           - aws-cli-base
-          - aws-mcps
           - cfn-tools
           - terraform-tools
+          - uv
         baseImage:
           - ubuntu:latest
     steps:

@@ -1,0 +1,6 @@
+{
+  "id": "uv",
+  "version": "1.0.0",
+  "name": "uv/uvx",
+  "description": "Installs uv/uvx so MCP servers requiring it can run in a devcontainer."
+}
