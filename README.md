@@ -1,71 +1,103 @@
-# Dev Container Features: Self Authoring Template
+# Dev Container Features
 
-> This repo provides a starting point and example for creating your own custom [dev container Features](https://containers.dev/implementors/features/), hosted for free on GitHub Container Registry.  The example in this repository follows the [dev container Feature distribution specification](https://containers.dev/implementors/features-distribution/).  
->
-> To provide feedback to the specification, please leave a comment [on spec issue #70](https://github.com/devcontainers/spec/issues/70). For more broad feedback regarding dev container Features, please see [spec issue #61](https://github.com/devcontainers/spec/issues/61).
+## Features in this repository
 
-## Example Contents
+This repository contains a _collection_ of four Features under [`src/`](src). Each sub-section below shows a sample `devcontainer.json` alongside example usage.
 
-This repository contains a _collection_ of two Features - `hello` and `color`. These Features serve as simple feature implementations.  Each sub-section below shows a sample `devcontainer.json` alongside example usage of the Feature.
+### `aws-cli-base`
 
-### `hello`
+Installs the AWS CLI (without the AWS VS Code plugins), optionally the Session Manager plugin, and the `ssmhost` helper script, which connects to an EC2 instance by Name tag or instance ID via SSM.
 
-Running `hello` inside the built container will print the greeting provided to it via its `greeting` option.
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `ssm-session-manager` | boolean | `true` | Also install the AWS Systems Manager Session Manager plugin (and `ssmhost`) |
 
 ```jsonc
 {
     "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
     "features": {
-        "ghcr.io/devcontainers/feature-starter/hello:1": {
-            "greeting": "Hello"
+        "ghcr.io/paul-e-allen/feature-starter/aws-cli-base:1": {
+            "ssm-session-manager": true
         }
     }
 }
 ```
 
 ```bash
-$ hello
-
-Hello, user.
+$ ssmhost my-instance-name
 ```
 
-### `color`
+### `aws-mcps`
 
-Running `color` inside the built container will print your favorite color to standard out.
+Installs `uv`/`uvx` and `iam-policy-autopilot` so AWS-related MCP servers can run in the container. It has no options.
 
 ```jsonc
-{
-    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-    "features": {
-        "ghcr.io/devcontainers/feature-starter/color:1": {
-            "favorite": "green"
-        }
+"features": {
+    "ghcr.io/paul-e-allen/feature-starter/aws-mcps:1": {}
+}
+```
+
+### `cfn-tools`
+
+Installs `cfn-lint` and `cfn-flip` (in a virtualenv, symlinked into `/usr/local/bin`), plus `rain` and `yq`. Depends on (and installs after) `ghcr.io/devcontainers/features/python:1`.
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `rain-version` | string | `1.24.4` | rain version to install (without the leading `v`) |
+| `yq-version` | string | `4.54.1` | yq version to install (without the leading `v`) |
+| `update-specs` | string (`background`, `none`) | `background` | Run `cfn-lint --update-specs` in the background after the container is created (`postCreateCommand`), or never |
+
+```jsonc
+"features": {
+    "ghcr.io/paul-e-allen/feature-starter/cfn-tools:1": {
+        "rain-version": "1.24.4",
+        "update-specs": "background"
     }
 }
 ```
 
-```bash
-$ color
+### `terraform-tools`
 
-my favorite color is green
+Installs `tfenv` and a default Terraform version managed by `tfenv`. Sets `TF_PLUGIN_CACHE_DIR` to `/opt/terraform/plugin-cache`.
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `tfenv-version` | string | `3.2.2` | tfenv version to install (without the leading `v`) |
+| `terraform-version` | string | `1.5.5` | Terraform version to install with tfenv and select as the default |
+
+```jsonc
+"features": {
+    "ghcr.io/paul-e-allen/feature-starter/terraform-tools:1": {
+        "terraform-version": "1.5.5"
+    }
+}
 ```
 
 ## Repo and Feature Structure
 
-Similar to the [`devcontainers/features`](https://github.com/devcontainers/features) repo, this repository has a `src` folder.  Each Feature has its own sub-folder, containing at least a `devcontainer-feature.json` and an entrypoint script `install.sh`. 
+Similar to the [`devcontainers/features`](https://github.com/devcontainers/features) repo, this repository has a `src` folder.  Each Feature has its own sub-folder, containing at least a `devcontainer-feature.json` and an entrypoint script `install.sh`. Each Feature also has a matching `test/<feature>/test.sh`.
 
 ```
 ├── src
-│   ├── hello
+│   ├── aws-cli-base
+│   │   ├── devcontainer-feature.json
+│   │   ├── install.sh
+│   │   ├── install-ssm-plugin.sh
+│   │   └── ssmhost
+│   ├── aws-mcps
 │   │   ├── devcontainer-feature.json
 │   │   └── install.sh
-│   ├── color
+│   ├── cfn-tools
 │   │   ├── devcontainer-feature.json
 │   │   └── install.sh
-|   ├── ...
-│   │   ├── devcontainer-feature.json
-│   │   └── install.sh
-...
+│   └── terraform-tools
+│       ├── devcontainer-feature.json
+│       └── install.sh
+└── test
+    ├── aws-cli-base/test.sh
+    ├── aws-mcps/test.sh
+    ├── cfn-tools/test.sh
+    └── terraform-tools/test.sh
 ```
 
 An [implementing tool](https://containers.dev/supporting#tools) will composite [the documented dev container properties](https://containers.dev/implementors/features/#devcontainer-feature-json-properties) from the feature's `devcontainer-feature.json` file, and execute in the `install.sh` entrypoint script in the container during build time.  Implementing tools are also free to process attributes under the `customizations` property as desired.
@@ -74,36 +106,23 @@ An [implementing tool](https://containers.dev/supporting#tools) will composite [
 
 All available options for a Feature should be declared in the `devcontainer-feature.json`.  The syntax for the `options` property can be found in the [devcontainer Feature json properties reference](https://containers.dev/implementors/features/#devcontainer-feature-json-properties).
 
-For example, the `color` feature provides an enum of three possible options (`red`, `gold`, `green`).  If no option is provided in a user's `devcontainer.json`, the value is set to "red".
+For example, the `cfn-tools` feature declares an enum option `update-specs` (`background` or `none`).  If no option is provided in a user's `devcontainer.json`, the value is set to `background`.
 
 ```jsonc
 {
     // ...
     "options": {
-        "favorite": {
+        "update-specs": {
             "type": "string",
-            "enum": [
-                "red",
-                "gold",
-                "green"
-            ],
-            "default": "red",
-            "description": "Choose your favorite color."
+            "enum": ["background", "none"],
+            "default": "background",
+            "description": "When to run 'cfn-lint --update-specs': in the background after the container is created, or never"
         }
     }
 }
 ```
 
-Options are exported as Feature-scoped environment variables.  The option name is captialized and sanitized according to [option resolution](https://containers.dev/implementors/features/#option-resolution).
-
-```bash
-#!/bin/bash
-
-echo "Activating feature 'color'"
-echo "The provided favorite color is: ${FAVORITE}"
-
-...
-```
+Options are exported as Feature-scoped environment variables.  The option name is capitalized and sanitized according to [option resolution](https://containers.dev/implementors/features/#option-resolution) (e.g. `ssm-session-manager` becomes `SSM_SESSION_MANAGER`).
 
 ## Distributing Features
 
@@ -123,16 +142,18 @@ This repo contains a **GitHub Action** [workflow](.github/workflows/release.yaml
 
 *Allow GitHub Actions to create and approve pull requests* should be enabled in the repository's `Settings > Actions > General > Workflow permissions` for auto generation of `src/<feature>/README.md` per Feature (which merges any existing `src/<feature>/NOTES.md`).
 
-By default, each Feature will be prefixed with the `<owner/<repo>` namespace.  For example, the two Features in this repository can be referenced in a `devcontainer.json` with:
+By default, each Feature will be prefixed with the `<owner/<repo>` namespace.  For example, the Features in this repository can be referenced in a `devcontainer.json` with:
 
 ```
-ghcr.io/devcontainers/feature-starter/color:1
-ghcr.io/devcontainers/feature-starter/hello:1
+ghcr.io/paul-e-allen/feature-starter/aws-cli-base:1
+ghcr.io/paul-e-allen/feature-starter/aws-mcps:1
+ghcr.io/paul-e-allen/feature-starter/cfn-tools:1
+ghcr.io/paul-e-allen/feature-starter/terraform-tools:1
 ```
 
-The provided GitHub Action will also publish a third "metadata" package with just the namespace, eg: `ghcr.io/devcontainers/feature-starter`.  This contains information useful for tools aiding in Feature discovery.
+The provided GitHub Action will also publish an additional "metadata" package with just the namespace, eg: `ghcr.io/paul-e-allen/feature-starter`.  This contains information useful for tools aiding in Feature discovery.
 
-'`devcontainers/feature-starter`' is known as the feature collection namespace.
+'`paul-e-allen/feature-starter`' is known as the feature collection namespace.
 
 ### Marking Feature Public
 
@@ -168,9 +189,7 @@ An example `devcontainer.json` can be found below.
 {
     "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
     "features": {
-     "ghcr.io/my-org/private-features/hello:1": {
-            "greeting": "Hello"
-        }
+     "ghcr.io/my-org/private-features/aws-mcps:1": {}
     },
     "customizations": {
         "codespaces": {
