@@ -1,6 +1,6 @@
 {
   "id": "aws-cli-base",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "AWS CLI (base)",
   "description": "Installs AWS CLI without adding AWS VS Code plugins",
   "options": {

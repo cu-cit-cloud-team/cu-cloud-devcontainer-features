@@ -1,6 +1,6 @@
 {
   "id": "terraform-tools",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Terraform tools",
   "description": "Installs tfenv and a default Terraform version managed by tfenv",
   "containerEnv": {
