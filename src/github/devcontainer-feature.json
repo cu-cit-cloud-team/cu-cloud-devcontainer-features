@@ -1,0 +1,6 @@
+{
+  "id": "github",
+  "version": "1.0.0",
+  "name": "github",
+  "description": "Add GitHub keys to ssh_known_hosts"
+}
