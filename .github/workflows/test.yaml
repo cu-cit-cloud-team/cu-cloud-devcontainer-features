@@ -6,7 +6,7 @@ on:
     paths:
       - 'src/**'
       - 'test/**'
-  pull_request:
+  # pull_request:
   workflow_dispatch:
 
 jobs:
@@ -18,6 +18,8 @@ jobs:
         features:
           - aws-cli-base
           - cfn-tools
+          - github
+          - python-ext
           - terraform-tools
           - uv
         baseImage:
