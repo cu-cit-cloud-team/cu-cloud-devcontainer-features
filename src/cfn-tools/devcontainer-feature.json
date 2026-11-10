@@ -1,6 +1,6 @@
 {
   "id": "cfn-tools",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "name": "CloudFormation tools",
   "description": "Installs cfn-lint, cfn-flip, rain and yq for working with CloudFormation templates",
   "options": {
