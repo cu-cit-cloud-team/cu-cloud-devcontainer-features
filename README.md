@@ -2,11 +2,11 @@
 
 ## Features in this repository
 
-This repository contains a _collection_ of four Features under [`src/`](src). Each sub-section below shows a sample `devcontainer.json` alongside example usage.
+This repository contains a _collection_ of Features under [`src/`](src). Each sub-section below shows a sample `devcontainer.json` alongside example usage.
 
 ### `aws-cli-base`
 
-Installs the AWS CLI (without the AWS VS Code plugins), optionally the Session Manager plugin, and the `ssmhost` helper script, which connects to an EC2 instance by Name tag or instance ID via SSM.
+Installs the AWS CLI (without the AWS VS Code plugin), optionally the Session Manager plugin, and the `ssmhost` helper script, which connects to an EC2 instance by Name tag or instance ID via SSM.
 
 | Option | Type | Default | Description |
 |---|---|---|---|
@@ -47,6 +47,35 @@ Installs `cfn-lint` and `cfn-flip` (in a virtualenv, symlinked into `/usr/local/
 }
 ```
 
+### `github`
+
+Adds GitHub's SSH host keys (via `ssh-keyscan github.com`) to `/etc/ssh/ssh_known_hosts`, so SSH access to GitHub doesn't prompt for host verification. It has no options.
+
+```jsonc
+"features": {
+    "ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/github:1": {}
+}
+```
+
+### `python-ext`
+
+Adds Python-related VS Code extensions to the container (via `customizations.vscode.extensions`):
+- `ms-python.python`
+- `ms-python.vscode-pylance`
+- `ms-python.vscode-python-envs`
+- `ms-python.autopep8`
+- `ms-python.black-formatter`
+- `ms-python.pylint`
+- `dbaeumer.vscode-eslint`
+
+It installs no software (besides the VS Code extensions) and has no options.
+
+```jsonc
+"features": {
+    "ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/python-ext:1": {}
+}
+```
+
 ### `terraform-tools`
 
 Installs `tfenv` and a default Terraform version managed by `tfenv`. Sets `TF_PLUGIN_CACHE_DIR` to `/opt/terraform/plugin-cache`.
@@ -66,7 +95,7 @@ Installs `tfenv` and a default Terraform version managed by `tfenv`. Sets `TF_PL
 
 ### `uv`
 
-Installs `uv`/`uvx` so MCP servers requiring it can run in the container. It has no options.
+Installs `uv`/`uvx` so MCP servers requiring it can run in the devcontainer. It has no options.
 
 ```jsonc
 "features": {
@@ -88,6 +117,12 @@ Similar to the [`devcontainers/features`](https://github.com/devcontainers/featu
 │   ├── cfn-tools
 │   │   ├── devcontainer-feature.json
 │   │   └── install.sh
+│   ├── github
+│   │   ├── devcontainer-feature.json
+│   │   └── install.sh
+│   ├── python-ext
+│   │   ├── devcontainer-feature.json
+│   │   └── install.sh
 │   ├── terraform-tools
 │   │   ├── devcontainer-feature.json
 │   │   └── install.sh
@@ -97,6 +132,8 @@ Similar to the [`devcontainers/features`](https://github.com/devcontainers/featu
 └── test
     ├── aws-cli-base/test.sh
     ├── cfn-tools/test.sh
+    ├── github/test.sh
+    ├── python-ext/test.sh
     ├── terraform-tools/test.sh
     └── uv/test.sh
 ```
@@ -147,9 +184,11 @@ By default, each Feature will be prefixed with the `<owner/<repo>` namespace.  F
 
 ```
 ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/aws-cli-base:1
-ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/aws-mcps:1
 ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/cfn-tools:1
+ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/github:1
+ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/python-ext:1
 ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/terraform-tools:1
+ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/uv:1
 ```
 
 The provided GitHub Action will also publish an additional "metadata" package with just the namespace, eg: `ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features`.  This contains information useful for tools aiding in Feature discovery.
