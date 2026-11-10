@@ -16,7 +16,7 @@ Installs the AWS CLI (without the AWS VS Code plugins), optionally the Session M
 {
     "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
     "features": {
-        "ghcr.io/paul-e-allen/feature-starter/aws-cli-base:1": {
+        "ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/aws-cli-base:1": {
             "ssm-session-manager": true
         }
     }
@@ -40,7 +40,7 @@ Installs `cfn-lint` and `cfn-flip` (in a virtualenv, symlinked into `/usr/local/
 
 ```jsonc
 "features": {
-    "ghcr.io/paul-e-allen/feature-starter/cfn-tools:1": {
+    "ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/cfn-tools:1": {
         "rain-version": "1.24.4",
         "update-specs": "background"
     }
@@ -58,7 +58,7 @@ Installs `tfenv` and a default Terraform version managed by `tfenv`. Sets `TF_PL
 
 ```jsonc
 "features": {
-    "ghcr.io/paul-e-allen/feature-starter/terraform-tools:1": {
+    "ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/terraform-tools:1": {
         "terraform-version": "1.5.5"
     }
 }
@@ -70,7 +70,7 @@ Installs `uv`/`uvx` so MCP servers requiring it can run in the container. It has
 
 ```jsonc
 "features": {
-    "ghcr.io/paul-e-allen/feature-starter/uv:1": {}
+    "ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/uv:1": {}
 }
 ```
 
@@ -146,15 +146,15 @@ This repo contains a **GitHub Action** [workflow](.github/workflows/release.yaml
 By default, each Feature will be prefixed with the `<owner/<repo>` namespace.  For example, the Features in this repository can be referenced in a `devcontainer.json` with:
 
 ```
-ghcr.io/paul-e-allen/feature-starter/aws-cli-base:1
-ghcr.io/paul-e-allen/feature-starter/aws-mcps:1
-ghcr.io/paul-e-allen/feature-starter/cfn-tools:1
-ghcr.io/paul-e-allen/feature-starter/terraform-tools:1
+ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/aws-cli-base:1
+ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/aws-mcps:1
+ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/cfn-tools:1
+ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features/terraform-tools:1
 ```
 
-The provided GitHub Action will also publish an additional "metadata" package with just the namespace, eg: `ghcr.io/paul-e-allen/feature-starter`.  This contains information useful for tools aiding in Feature discovery.
+The provided GitHub Action will also publish an additional "metadata" package with just the namespace, eg: `ghcr.io/cu-cit-cloud-team/cu-cloud-devcontainer-features`.  This contains information useful for tools aiding in Feature discovery.
 
-'`paul-e-allen/feature-starter`' is known as the feature collection namespace.
+'`cu-cit-cloud-team/cu-cloud-devcontainer-features`' is known as the feature collection namespace.
 
 ### Marking Feature Public
 
@@ -164,45 +164,4 @@ This can be done by navigating to the Feature's "package settings" page in GHCR,
 
 ```
 https://github.com/users/<owner>/packages/container/<repo>%2F<featureName>/settings
-```
-
-<img width="669" alt="image" src="https://user-images.githubusercontent.com/23246594/185244705-232cf86a-bd05-43cb-9c25-07b45b3f4b04.png">
-
-### Adding Features to the Index
-
-If you'd like your Features to appear in our [public index](https://containers.dev/features) so that other community members can find them, you can do the following:
-
-* Go to [github.com/devcontainers/devcontainers.github.io](https://github.com/devcontainers/devcontainers.github.io)
-     * This is the GitHub repo backing the [containers.dev](https://containers.dev/) spec site
-* Open a PR to modify the [collection-index.yml](https://github.com/devcontainers/devcontainers.github.io/blob/gh-pages/_data/collection-index.yml) file
-
-This index is from where [supporting tools](https://containers.dev/supporting) like [VS Code Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) and [GitHub Codespaces](https://github.com/features/codespaces) surface Features for their dev container creation UI.
-
-#### Using private Features in Codespaces
-
-For any Features hosted in GHCR that are kept private, the `GITHUB_TOKEN` access token in your environment will need to have `package:read` and `contents:read` for the associated repository.
-
-Many implementing tools use a broadly scoped access token and will work automatically.  GitHub Codespaces uses repo-scoped tokens, and therefore you'll need to add the permissions in `devcontainer.json`
-
-An example `devcontainer.json` can be found below.
-
-```jsonc
-{
-    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-    "features": {
-     "ghcr.io/my-org/private-features/aws-mcps:1": {}
-    },
-    "customizations": {
-        "codespaces": {
-            "repositories": {
-                "my-org/private-features": {
-                    "permissions": {
-                        "packages": "read",
-                        "contents": "read"
-                    }
-                }
-            }
-        }
-    }
-}
 ```
