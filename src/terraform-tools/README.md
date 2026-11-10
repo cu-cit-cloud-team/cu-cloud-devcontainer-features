@@ -18,6 +18,13 @@ Installs tfenv and a default Terraform version managed by tfenv
 | tfenv-version | tfenv version to install (without the leading 'v') | string | 3.2.2 |
 | terraform-version | Terraform version to install with tfenv and select as the default | string | 1.5.5 |
 
+## Customizations
+
+### VS Code Extensions
+
+- `hashicorp.terraform`
+- `hashicorp.hcl`
+
 
 
 ---
