@@ -1,6 +1,6 @@
 {
   "id": "terraform-tools",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "name": "Terraform tools",
   "description": "Installs tfenv and a default Terraform version managed by tfenv",
   "containerEnv": {
@@ -14,7 +14,11 @@
           "editor.insertSpaces": true,
           "editor.detectIndentation": false
         }
-      }
+      },
+      "extensions": [
+        "hashicorp.terraform",
+        "hashicorp.hcl"
+      ]
     }
   },
   "options": {

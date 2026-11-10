@@ -105,6 +105,7 @@ This feature adds the following VS Code Settings for consistent formatting for T
 
 #### Change Log
 
+**1.2.0** - Added `hashicorp.terraform` and `hashicorp.hcl` VS Code extensions.
 **1.1.0** - Added VSCode `[terraform]` editor settings for tab size and indentation.
 **1.0.0** - Initial release of the terraform-tools feature.
 
