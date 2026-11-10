@@ -6,6 +6,17 @@
   "containerEnv": {
     "TF_PLUGIN_CACHE_DIR": "/opt/terraform/plugin-cache"
   },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "[terraform]": {
+          "editor.tabSize": 2,
+          "editor.insertSpaces": true,
+          "editor.detectIndentation": false
+        }
+      }
+    }
+  },
   "options": {
     "tfenv-version": {
       "type": "string",
