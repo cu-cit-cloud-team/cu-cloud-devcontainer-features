@@ -93,6 +93,21 @@ Installs `tfenv` and a default Terraform version managed by `tfenv`. Sets `TF_PL
 }
 ```
 
+This feature adds the following VS Code Settings for consistent formatting for Terraform files:
+
+```jsonc
+"[terraform]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false
+}
+```
+
+#### Change Log
+
+**1.1.0** - Added VSCode `[terraform]` editor settings for tab size and indentation.
+**1.0.0** - Initial release of the terraform-tools feature.
+
 ### `uv`
 
 Installs `uv`/`uvx` so MCP servers requiring it can run in the devcontainer. It has no options.
